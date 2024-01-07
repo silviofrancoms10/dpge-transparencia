@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    br.def.ms.defensoria.sboot.autoconfigure.transparencia.TransparenciaAutoConfiguration

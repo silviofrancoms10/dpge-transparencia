@@ -1,0 +1,81 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'org.springframework.boot' version '2.7.12'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+}
+
+group = 'br.def.ms.defensoria'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '1.8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: '2.7.12'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: '2.7.18'
+
+    // JSR
+    implementation group: 'javax.cache', name: 'cache-api', version: '1.1.1'
+
+    // Database
+    implementation group: 'com.microsoft.sqlserver', name: 'mssql-jdbc', version: '8.2.0.jre8'
+
+    // Development
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.1.1'
+    implementation group: 'org.ehcache', name: 'ehcache', version: '3.10.8'
+    implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.5'
+
+    // Documentation
+    implementation group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0'
+    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.10.0'
+    testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.10.0'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        html.enabled true
+        xml.enabled true
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "br/def/ms/defensoria/sboot/autoconfigure/*",
+                    "br/def/ms/defensoria/transparencia/configuration/*",
+                    "br/def/ms/defensoria/transparencia/models/*",
+                    "br/def/ms/defensoria/transparencia/repositories/*",
+                    "br/def/ms/defensoria/transparencia/controllers/exceptions/*",
+                    "br/def/ms/defensoria/transparencia/DpgeTransparenciaApplication.class"
+            ])
+        }))
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.6"
+}
